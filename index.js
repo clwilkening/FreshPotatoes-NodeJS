@@ -4,6 +4,7 @@ const sqlite = require('sqlite'),
       express = require('express'),
       moment = require('moment'),
       axios = require('axios'),
+      _ = require('lodash'),
       app = express();
 
 const { PORT=3000, NODE_ENV='development', DB_PATH='./db/database.db' } = process.env;
@@ -92,7 +93,7 @@ function getFilmRecommendations(req, res) {
 		films.forEach((film, i) => {
 			//console.log(film.id)
 			ids.push(film.id);
-		})
+		});
 		return ids;
 		
 		// Films.findAll({
@@ -128,8 +129,8 @@ function getFilmRecommendations(req, res) {
 				})
 				.catch(err => {
 					console.error('err', err);
-				})
-			}) 
+				});
+			});
 				//console.log('movieratings ', movieRatings);
 		});
 	 	return promise.then(() => {
@@ -141,6 +142,37 @@ function getFilmRecommendations(req, res) {
 		// return ratings;
 		//eturn Promise.all(ratings);
 	})
+	.then((ratings) => {
+		//TODO: get the average rating
+		//ratings must be >= 5
+		//avg must be 4 or higer
+		let recommendations = [];
+		//console.log('ratings ', ratings);
+		ratings.forEach((arr, i) => {
+			let recomObj = {};
+			console.log(arr[i]);
+			if (arr[i].rating !== undefined) {
+				if (arr[i].rating.length >= 4) {
+					let avg = _.mean(arr[i].rating);
+					if (avg >= 4) {
+						recomObj.id = arr[i].id;
+						recomObj.averageRating = avg;
+						recomObj.reviews = length;
+					};
+				};
+			  recommendations.push(recomObj);			
+			};
+		});
+		return recommendations;
+	})
+	.then((recommendations) => {
+		//TODO: build correct recommendations object
+		console.log('recs', recommendations);
+	})
+	.catch(err => {
+		console.log(err.message);
+		res.json('message: ' + err.message);
+	});
 };
 
 module.exports = app;
