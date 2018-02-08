@@ -2,6 +2,7 @@ const sqlite = require('sqlite'),
       Sequelize = require('sequelize'),
       request = require('request'),
       express = require('express'),
+      moment = require('moment'),
       app = express();
 
 const { PORT=3000, NODE_ENV='development', DB_PATH='./db/database.db' } = process.env;
@@ -53,11 +54,33 @@ function getFilmRecommendations(req, res) {
 	// 	console.log('films ', films)
 	// })
 
-	Films.findById(parseInt(req.params.id))
-  .then((film) => {
-		console.log('film ', film);
-		return film;
-	  //res.json(films);
+	return Films.findById(parseInt(req.params.id))
+ //  .then((film) => {
+	// 	//console.log('film ', film);
+	// 	return film;
+	//   //res.json(films);
+	// })
+	.then((film) => {
+		//get all films where genre matches
+		//console.log('film foundById', film)
+		//console.log(film.release_date);
+		//var minus15 = new Date(film.release_date);
+		var minus15 = moment(film.release_date).subtract(15, 'years').format('YYYY MM DD');
+		//console.log('minus15', minus15)
+		//console.log(minus15);
+		var plus15 = moment(film.release_date).add(15, 'years').format('YYYY MM DD');
+		//console.log(plus15)
+		//var Op = Sequelize.Op; not in v3
+	  return Films.findAll({
+			where: [ 
+				`genre_id=${film.genre_id} and release_date >= '${minus15}' and release_date <= '${plus15}'`
+			]
+		})
+		.then((films) => {
+			console.log('genres ', films)
+			//res.json(films)
+			return films;
+		})
 	})
   //res.status(500).send('Not Implemented');
 }
