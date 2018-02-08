@@ -20,6 +20,24 @@ const sequelize = new Sequelize({
   sync: {force:true}
 })
 
+const Films = sequelize.define('film', {
+	id: {type: Sequelize.INTEGER, primaryKey: true},
+	title: Sequelize.STRING,
+	release_date: Sequelize.STRING,
+	tagline: Sequelize.STRING,
+	revenue: Sequelize.BIGINT,
+	budget: Sequelize.BIGINT,
+	runtime: Sequelize.INTEGER,
+	original_language: Sequelize.STRING,
+	status: Sequelize.STRING,
+	genre_id: Sequelize.INTEGER
+}, {
+	tableName: 'films',
+	define: {timestamps: false}
+});
+
+Films.sync().then(() => console.log('SYNCED'));
+
 sequelize.authenticate()
 	.then(() => {
 		console.log('CONNECTION ESTABLISHED', './db/database.db');
@@ -30,7 +48,18 @@ app.get('/films/:id/recommendations', getFilmRecommendations);
 
 // ROUTE HANDLER
 function getFilmRecommendations(req, res) {
-  res.status(500).send('Not Implemented');
+	// Films.findAll()
+	// .then(films => {
+	// 	console.log('films ', films)
+	// })
+
+	Films.findById(parseInt(req.params.id))
+  .then((film) => {
+		console.log('film ', film);
+		return film;
+	  //res.json(films);
+	})
+  //res.status(500).send('Not Implemented');
 }
 
 module.exports = app;
