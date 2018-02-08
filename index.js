@@ -76,11 +76,33 @@ function getFilmRecommendations(req, res) {
 				`genre_id=${film.genre_id} and release_date >= '${minus15}' and release_date <= '${plus15}'`
 			]
 		})
-		.then((films) => {
-			console.log('genres ', films)
-			//res.json(films)
-			return films;
+		// .then((films) => {
+		// 	console.log('genres ', films)
+		// 	//res.json(films)
+		// 	return films;
+		// })
+	.then((films) => {
+		//console.log('filmss', films);
+		//using matching genres, get reviews for each and calculate the average rating
+		//console.log('films', films[0].dataValues.id)
+		//console.log('films length', films.length);
+		let ids = [];
+		films.forEach((film, i) => {
+			//console.log(film.id)
+			ids.push(film.id);
 		})
+		return ids;
+		
+		// Films.findAll({
+		// 	where: {
+		// 		genre_id = film.genre_id,
+
+		// 	}
+		// })
+		})
+	.then((ids) => {
+		console.log('ids', ids)
+	})
 	})
   //res.status(500).send('Not Implemented');
 }
