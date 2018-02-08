@@ -102,8 +102,7 @@ function getFilmRecommendations(req, res) {
 		// 	}
 		// })
 		})
-	.then((ids) => {
-		//console.log('ids', ids)
+		.then((ids) => {
 		let promise = Promise.resolve(null);
 	  let movieRatings = [];
 	 	ids.forEach((id, i) => {
@@ -127,20 +126,21 @@ function getFilmRecommendations(req, res) {
 					//console.log('movieRatings',movieRatings)
 					movieRatings.push(newArray);
 				})
-				// .then(() => {
-				// 	return Promise.all(movieRatings).then((data) => {
-				// 		console.log('dadaaata', data)
-				// 		return data;
-				// 	});
-				// })
 				.catch(err => {
 					console.error('err', err);
 				})
-			})
+			}) 
 				//console.log('movieratings ', movieRatings);
+		});
+	 	return promise.then(() => {
+	 		return movieRatings;
+	 	})
+ 	// 	console.log('getratings', movieRatings)
+		// let ratings = getRatings(ids);
+		// console.log('ra ratings',ratings)
+		// return ratings;
+		//eturn Promise.all(ratings);
 	})
-	})
-  //res.status(500).send('Not Implemented');
 };
 
 module.exports = app;
