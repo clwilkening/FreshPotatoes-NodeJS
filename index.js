@@ -3,6 +3,7 @@ const sqlite = require('sqlite'),
       request = require('request'),
       express = require('express'),
       moment = require('moment'),
+      axios = require('axios'),
       app = express();
 
 const { PORT=3000, NODE_ENV='development', DB_PATH='./db/database.db' } = process.env;
@@ -81,6 +82,7 @@ function getFilmRecommendations(req, res) {
 		// 	//res.json(films)
 		// 	return films;
 		// })
+	})
 	.then((films) => {
 		//console.log('filmss', films);
 		//using matching genres, get reviews for each and calculate the average rating
@@ -101,10 +103,44 @@ function getFilmRecommendations(req, res) {
 		// })
 		})
 	.then((ids) => {
-		console.log('ids', ids)
+		//console.log('ids', ids)
+		let promise = Promise.resolve(null);
+	  let movieRatings = [];
+	 	ids.forEach((id, i) => {
+			let obj = {};
+		  let ratings = [];
+			promise = promise.then(() => {
+				return axios.get(`http://credentials-api.generalassemb.ly/4576f55f-c427-4cfc-a11c-5bfe914ca6c1?films=${id}`)
+				.then((res) => {
+					let newArray = [];
+					// TODO: loop through body and push film id and array of reviews
+					const blob = res.data[0].reviews;
+					blob.forEach((rating, i) => {
+						ratings.push(rating.rating);
+						//console.log(rating.rating)
+					});
+
+					obj.id = id;
+					obj.rating = ratings;
+					//console.log('obj', obj);
+					newArray.push(obj);
+					//console.log('movieRatings',movieRatings)
+					movieRatings.push(newArray);
+				})
+				// .then(() => {
+				// 	return Promise.all(movieRatings).then((data) => {
+				// 		console.log('dadaaata', data)
+				// 		return data;
+				// 	});
+				// })
+				.catch(err => {
+					console.error('err', err);
+				})
+			})
+				//console.log('movieratings ', movieRatings);
 	})
 	})
   //res.status(500).send('Not Implemented');
-}
+};
 
 module.exports = app;
